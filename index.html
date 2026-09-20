@@ -142,10 +142,6 @@
 strategy('XAUIDR Scalp 5m', default_qty_type=strategy.percent_of_equity, default_qty_value=100)
 
 // Volume Profile + SR Scalp
-var float profile_high = na
-var float profile_low = na
-
-// Setup
 profile_high = ta.highest(high, 20)
 profile_low = ta.lowest(low, 20)
 
@@ -174,10 +170,6 @@ if take_profit_short
 strategy('XAUIDR Scalp 15m', default_qty_type=strategy.percent_of_equity, default_qty_value=100)
 
 // Volume Profile + SR Scalp (15m variant)
-var float profile_high = na
-var float profile_low = na
-
-// Setup (longer period for 15m)
 profile_high = ta.highest(high, 30)
 profile_low = ta.lowest(low, 30)
 
