@@ -137,12 +137,12 @@
     <script>
         const strategies = {
             'scalp-5m': {
-                name: 'XAUIDR Scalp (5m) - SIMPLE BREAKOUT',
+                name: 'XAUIDR Scalp (5m)',
                 code: `//@version=5
-strategy("XAUIDR Scalp - Basic Breakout", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+strategy("XAUIDR Scalp - Breakout", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
 
 // ===== INPUT PARAMETERS =====
-lookback = input.int(5, title="Lookback Bars (High/Low)", minval=2, maxval=20)
+lookback = input.int(5, title="Lookback Bars", minval=2, maxval=20)
 tp_pips = input.int(15, title="Take Profit (pips)", minval=5, maxval=50)
 sl_pips = input.int(10, title="Stop Loss (pips)", minval=5, maxval=50)
 
@@ -150,12 +150,16 @@ sl_pips = input.int(10, title="Stop Loss (pips)", minval=5, maxval=50)
 highest = ta.highest(high, lookback)
 lowest = ta.lowest(low, lookback)
 
-// ===== ENTRY SIGNALS =====
-// Simple breakout: Close above 5-bar high = LONG
-long_signal = close > highest[1]
+// Get previous bar values
+prev_highest = highest[1]
+prev_lowest = lowest[1]
 
-// Simple breakout: Close below 5-bar low = SHORT
-short_signal = close < lowest[1]
+// ===== ENTRY SIGNALS =====
+// Long: Current close breaks above previous period's highest
+long_signal = close > prev_highest and close[1] <= prev_highest
+
+// Short: Current close breaks below previous period's lowest
+short_signal = close < prev_lowest and close[1] >= prev_lowest
 
 // ===== ENTRY LOGIC =====
 if long_signal
@@ -164,7 +168,7 @@ if long_signal
 if short_signal
     strategy.entry("Short", strategy.short)
 
-// ===== EXIT WITH FIXED LEVELS =====
+// ===== EXIT LOGIC =====
 if strategy.position_size > 0
     strategy.exit("CloseLong", from_entry="Long", profit=tp_pips, loss=sl_pips)
 
@@ -172,22 +176,19 @@ if strategy.position_size < 0
     strategy.exit("CloseShort", from_entry="Short", profit=tp_pips, loss=sl_pips)
 
 // ===== VISUALIZATION =====
-plot(highest, title="5-Bar High", color=color.new(color.green, 40), linewidth=2)
-plot(lowest, title="5-Bar Low", color=color.new(color.red, 40), linewidth=2)
+plot(highest, title="High", color=color.new(color.green, 40), linewidth=2)
+plot(lowest, title="Low", color=color.new(color.red, 40), linewidth=2)
 
-plotshape(long_signal, title="LONG Signal", style=shape.arrowup, location=location.belowbar, color=color.new(color.green, 0), size=size.large)
-plotshape(short_signal, title="SHORT Signal", style=shape.arrowdown, location=location.abovebar, color=color.new(color.red, 0), size=size.large)
-
-bgcolor(long_signal ? color.new(color.green, 80) : na, title="Long Signal BG")
-bgcolor(short_signal ? color.new(color.red, 80) : na, title="Short Signal BG")`
+plotshape(long_signal, title="LONG", style=shape.arrowup, location=location.belowbar, color=color.green, size=size.large)
+plotshape(short_signal, title="SHORT", style=shape.arrowdown, location=location.abovebar, color=color.red, size=size.large)`
             },
             'scalp-15m': {
-                name: 'XAUIDR Scalp (15m) - SIMPLE BREAKOUT',
+                name: 'XAUIDR Scalp (15m)',
                 code: `//@version=5
-strategy("XAUIDR Scalp 15m - Basic Breakout", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+strategy("XAUIDR Scalp 15m - Breakout", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
 
 // ===== INPUT PARAMETERS =====
-lookback = input.int(8, title="Lookback Bars (High/Low)", minval=2, maxval=20)
+lookback = input.int(8, title="Lookback Bars", minval=2, maxval=20)
 tp_pips = input.int(20, title="Take Profit (pips)", minval=5, maxval=50)
 sl_pips = input.int(12, title="Stop Loss (pips)", minval=5, maxval=50)
 
@@ -195,12 +196,16 @@ sl_pips = input.int(12, title="Stop Loss (pips)", minval=5, maxval=50)
 highest = ta.highest(high, lookback)
 lowest = ta.lowest(low, lookback)
 
-// ===== ENTRY SIGNALS =====
-// Simple breakout: Close above 8-bar high = LONG
-long_signal = close > highest[1]
+// Get previous bar values
+prev_highest = highest[1]
+prev_lowest = lowest[1]
 
-// Simple breakout: Close below 8-bar low = SHORT
-short_signal = close < lowest[1]
+// ===== ENTRY SIGNALS =====
+// Long: Current close breaks above previous period's highest
+long_signal = close > prev_highest and close[1] <= prev_highest
+
+// Short: Current close breaks below previous period's lowest
+short_signal = close < prev_lowest and close[1] >= prev_lowest
 
 // ===== ENTRY LOGIC =====
 if long_signal
@@ -209,7 +214,7 @@ if long_signal
 if short_signal
     strategy.entry("Short", strategy.short)
 
-// ===== EXIT WITH FIXED LEVELS =====
+// ===== EXIT LOGIC =====
 if strategy.position_size > 0
     strategy.exit("CloseLong", from_entry="Long", profit=tp_pips, loss=sl_pips)
 
@@ -217,14 +222,11 @@ if strategy.position_size < 0
     strategy.exit("CloseShort", from_entry="Short", profit=tp_pips, loss=sl_pips)
 
 // ===== VISUALIZATION =====
-plot(highest, title="8-Bar High", color=color.new(color.green, 40), linewidth=2)
-plot(lowest, title="8-Bar Low", color=color.new(color.red, 40), linewidth=2)
+plot(highest, title="High", color=color.new(color.green, 40), linewidth=2)
+plot(lowest, title="Low", color=color.new(color.red, 40), linewidth=2)
 
-plotshape(long_signal, title="LONG Signal", style=shape.arrowup, location=location.belowbar, color=color.new(color.green, 0), size=size.large)
-plotshape(short_signal, title="SHORT Signal", style=shape.arrowdown, location=location.abovebar, color=color.new(color.red, 0), size=size.large)
-
-bgcolor(long_signal ? color.new(color.green, 80) : na, title="Long Signal BG")
-bgcolor(short_signal ? color.new(color.red, 80) : na, title="Short Signal BG")`
+plotshape(long_signal, title="LONG", style=shape.arrowup, location=location.belowbar, color=color.green, size=size.large)
+plotshape(short_signal, title="SHORT", style=shape.arrowdown, location=location.abovebar, color=color.red, size=size.large)`
             }
         };
 
