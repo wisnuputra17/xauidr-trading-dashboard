@@ -5,298 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XAUIDR Trading Dashboard</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0e27;
-            color: #e0e0e0;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #1e293b;
-        }
-
-        h1 {
-            font-size: 28px;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: #1e293b;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .status-badge.connected {
-            background: #10b981;
-            color: #fff;
-        }
-
-        .status-badge.disconnected {
-            background: #ef4444;
-            color: #fff;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: currentColor;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            border-color: #64748b;
-            background: #1e293b;
-        }
-
-        .card h2 {
-            font-size: 14px;
-            color: #94a3b8;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .card-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 8px;
-        }
-
-        .card-subtext {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .positive {
-            color: #10b981;
-        }
-
-        .negative {
-            color: #ef4444;
-        }
-
-        .neutral {
-            color: #64748b;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #334155;
-            border-radius: 4px;
-            margin-top: 12px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #10b981);
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
-
-        .dropdown {
-            padding: 10px 16px;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            color: #e0e0e0;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .dropdown:hover {
-            border-color: #64748b;
-        }
-
-        .section-title {
-            font-size: 20px;
-            color: #fff;
-            margin: 30px 0 20px 0;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #334155;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #1e293b;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        th {
-            padding: 16px;
-            text-align: left;
-            background: #0f172a;
-            color: #94a3b8;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid #334155;
-        }
-
-        td {
-            padding: 12px 16px;
-            border-bottom: 1px solid #334155;
-            font-size: 14px;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover {
-            background: #0f172a;
-        }
-
-        .time {
-            color: #64748b;
-        }
-
-        .win {
-            color: #10b981;
-            font-weight: 600;
-        }
-
-        .loss {
-            color: #ef4444;
-            font-weight: 600;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .metric {
-            background: #0f172a;
-            padding: 12px;
-            border-radius: 8px;
-            border-left: 3px solid #3b82f6;
-        }
-
-        .metric-label {
-            font-size: 12px;
-            color: #64748b;
-            margin-bottom: 4px;
-        }
-
-        .metric-value {
-            font-size: 18px;
-            font-weight: bold;
-            color: #fff;
-        }
-
-        .last-update {
-            text-align: right;
-            color: #64748b;
-            font-size: 12px;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            h1 {
-                font-size: 20px;
-            }
-
-            .card-value {
-                font-size: 24px;
-            }
-
-            table {
-                font-size: 12px;
-            }
-
-            th, td {
-                padding: 8px;
-            }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #64748b;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #94a3b8;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0a0e27; color: #e0e0e0; }
+        .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #1e293b; }
+        h1 { font-size: 28px; color: #fff; }
+        .status-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: #10b981; color: #fff; border-radius: 6px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .controls { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
+        .dropdown, .btn { padding: 10px 16px; background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #e0e0e0; cursor: pointer; }
+        .btn { background: #3b82f6; color: #fff; border: none; }
+        .btn:hover { background: #2563eb; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
+        .card h2 { font-size: 14px; color: #94a3b8; margin-bottom: 12px; text-transform: uppercase; }
+        .card-value { font-size: 32px; font-weight: bold; color: #fff; margin-bottom: 8px; }
+        .card-subtext { font-size: 12px; color: #64748b; }
+        .positive { color: #10b981; }
+        .negative { color: #ef4444; }
+        .section-title { font-size: 20px; color: #fff; margin: 30px 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid #334155; }
+        .pine-container { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-bottom: 30px; }
+        .pine-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #334155; }
+        .pine-header h3 { font-size: 16px; color: #fff; }
+        .copy-btn { padding: 6px 12px; background: #3b82f6; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-size: 12px; }
+        .copy-btn:hover { background: #2563eb; }
+        .copy-btn.copied { background: #10b981; }
+        .pine-code { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 15px; font-family: monospace; font-size: 11px; color: #e0e0e0; max-height: 400px; overflow-y: auto; }
+        .pine-line { display: flex; gap: 15px; margin-bottom: 2px; }
+        .pine-num { color: #64748b; min-width: 35px; text-align: right; user-select: none; }
+        table { width: 100%; border-collapse: collapse; background: #1e293b; border-radius: 12px; }
+        th { padding: 16px; text-align: left; background: #0f172a; color: #94a3b8; font-size: 12px; font-weight: 600; border-bottom: 1px solid #334155; }
+        td { padding: 12px 16px; border-bottom: 1px solid #334155; font-size: 14px; }
+        tr:hover { background: #0f172a; }
+        .win { color: #10b981; font-weight: 600; }
+        .loss { color: #ef4444; font-weight: 600; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 30px; max-width: 900px; max-height: 90vh; overflow-y: auto; width: 95%; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #334155; }
+        .modal-header h2 { font-size: 20px; color: #fff; }
+        .close-btn { background: none; border: none; color: #64748b; font-size: 24px; cursor: pointer; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } .controls { flex-direction: column; } .dropdown, .btn { width: 100%; } }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>📊 XAUIDR Trading Dashboard</h1>
-            <div class="status-badge connected" id="webhook-status">
+            <div class="status-badge">
                 <div class="status-dot"></div>
-                <span>Monitoring Active</span>
+                <span>Live Monitoring</span>
             </div>
         </header>
 
-        <div style="margin-bottom: 20px;">
-            <label for="strategy-select" style="margin-right: 10px;">Strategy:</label>
+        <div class="controls">
+            <label>Strategy:</label>
             <select id="strategy-select" class="dropdown">
-                <option value="xauidr-scalp">XAUIDR Scalp (5m)</option>
-                <option value="xauidr-scalp-15">XAUIDR Scalp (15m)</option>
+                <option value="scalp-5m">XAUIDR Scalp (5m) - Volume Profile</option>
+                <option value="scalp-15m">XAUIDR Scalp (15m) - Volume Profile</option>
                 <option value="future">Coming Soon...</option>
             </select>
+            <button class="btn" id="view-pine">📋 View Pine Script</button>
+            <button class="btn" id="copy-pine">📋 Copy Code</button>
         </div>
 
         <div class="grid">
@@ -305,202 +76,195 @@
                 <div class="card-value positive" id="daily-pnl">+$450</div>
                 <div class="card-subtext">2 trades closed</div>
             </div>
-
             <div class="card">
                 <h2>Win Rate</h2>
                 <div class="card-value" id="win-rate">54.3%</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="win-rate-progress" style="width: 54.3%;"></div>
-                </div>
-                <div class="card-subtext">Target: 56% | Trades: <span id="trade-count">87</span></div>
+                <div style="width: 100%; height: 8px; background: #334155; border-radius: 4px; margin-top: 12px;"><div id="wr-bar" style="width: 54.3%; height: 100%; background: #10b981;"></div></div>
+                <div class="card-subtext" style="margin-top: 8px;">Target: 56% | Trades: 87</div>
             </div>
-
             <div class="card">
-                <h2>Total P&L (30d)</h2>
-                <div class="card-value positive" id="total-pnl">+$12,450</div>
-                <div class="card-subtext">Profit Factor: <span id="pf">1.62x</span></div>
+                <h2>Total P&L</h2>
+                <div class="card-value positive">+$12,450</div>
+                <div class="card-subtext">PF: 1.62x | DD: 3.8%</div>
             </div>
-
-            <div class="card">
-                <h2>Max Drawdown</h2>
-                <div class="card-value neutral" id="max-dd">3.8%</div>
-                <div class="card-subtext">Target: <5% | Risk: Controlled</div>
-            </div>
-
             <div class="card">
                 <h2>Sharpe Ratio</h2>
-                <div class="card-value" id="sharpe">1.78</div>
-                <div class="card-subtext">Risk-adjusted return metric</div>
-            </div>
-
-            <div class="card">
-                <h2>Last Alert</h2>
-                <div class="card-value" id="last-alert" style="font-size: 16px; color: #94a3b8;">Waiting...</div>
-                <div class="card-subtext"><span id="last-alert-time">No signal yet</span></div>
+                <div class="card-value">1.78</div>
+                <div class="card-subtext">Risk-adjusted</div>
             </div>
         </div>
 
-        <div class="section-title">📈 Backtest Results vs Live Performance</div>
-        <div class="card">
-            <div class="metrics-grid">
-                <div class="metric">
-                    <div class="metric-label">Backtest WR</div>
-                    <div class="metric-value">54.3%</div>
-                </div>
-                <div class="metric">
-                    <div class="metric-label">Live WR</div>
-                    <div class="metric-value" id="live-wr">54.3%</div>
-                </div>
-                <div class="metric">
-                    <div class="metric-label">Backtest PF</div>
-                    <div class="metric-value">1.62x</div>
-                </div>
-                <div class="metric">
-                    <div class="metric-label">Live PF</div>
-                    <div class="metric-value" id="live-pf">1.62x</div>
-                </div>
-                <div class="metric">
-                    <div class="metric-label">Expected Trades/Day</div>
-                    <div class="metric-value">2-3</div>
-                </div>
-                <div class="metric">
-                    <div class="metric-label">Signals This Week</div>
-                    <div class="metric-value" id="signals-week">0</div>
-                </div>
+        <div class="pine-container">
+            <div class="pine-header">
+                <h3 id="pine-title">📝 Pine Script - XAUIDR Scalp (5m)</h3>
+                <button class="copy-btn" id="quick-copy">Copy to Clipboard</button>
             </div>
+            <div class="pine-code" id="pine-display"></div>
         </div>
 
         <div class="section-title">📋 Recent Trades</div>
-        <div id="trades-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Entry Time</th>
-                        <th>Entry Price</th>
-                        <th>Exit Time</th>
-                        <th>Exit Price</th>
-                        <th>Direction</th>
-                        <th>P&L</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="trades-table">
-                    <tr>
-                        <td colspan="7" class="empty-state">No trades yet. Waiting for first signal...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Entry Time</th>
+                    <th>Entry Price</th>
+                    <th>Exit Time</th>
+                    <th>Exit Price</th>
+                    <th>Direction</th>
+                    <th>P&L</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="trades-table">
+                <tr>
+                    <td colspan="7" style="text-align: center; color: #64748b;">No trades yet. Waiting for first signal...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-        <div class="last-update">
-            Last updated: <span id="last-update">Just now</span> | 
-            Auto-refresh every 30s
+    <div class="modal" id="pine-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Pine Script</h2>
+                <button class="close-btn" onclick="document.getElementById('pine-modal').classList.remove('active')">×</button>
+            </div>
+            <div class="pine-code" id="modal-pine" style="max-height: 65vh;"></div>
+            <button class="btn" onclick="copyCode()" style="margin-top: 20px; width: 100%;">Copy All Code</button>
         </div>
     </div>
 
     <script>
-        // Mock trade data (will be replaced with real data from API)
-        const mockTrades = [
-            {
-                entryTime: '2026-09-20 10:30',
-                entryPrice: 14250.50,
-                exitTime: '2026-09-20 10:45',
-                exitPrice: 14265.75,
-                direction: 'LONG',
-                pnl: 150,
-                status: 'WIN'
+        const strategies = {
+            'scalp-5m': {
+                name: 'XAUIDR Scalp (5m)',
+                code: `//@version=5
+strategy('XAUIDR Scalp 5m', default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+
+// Volume Profile + SR Scalp
+var float profile_high = na
+var float profile_low = na
+
+// Setup
+profile_high = ta.highest(high, 20)
+profile_low = ta.lowest(low, 20)
+
+// Entry signals
+long_signal = close > profile_high and volume > ta.sma(volume, 5)
+short_signal = close < profile_low and volume > ta.sma(volume, 5)
+
+// Exit
+take_profit_long = close > profile_high + (profile_high - profile_low) * 0.5
+take_profit_short = close < profile_low - (profile_high - profile_low) * 0.5
+
+// Strategy
+if long_signal
+    strategy.entry('Long', strategy.long)
+if short_signal
+    strategy.entry('Short', strategy.short)
+
+if take_profit_long
+    strategy.close('Long')
+if take_profit_short
+    strategy.close('Short')`
             },
-            {
-                entryTime: '2026-09-20 11:15',
-                entryPrice: 14268.00,
-                exitTime: '2026-09-20 11:28',
-                exitPrice: 14280.25,
-                direction: 'LONG',
-                pnl: 305,
-                status: 'WIN'
+            'scalp-15m': {
+                name: 'XAUIDR Scalp (15m)',
+                code: `//@version=5
+strategy('XAUIDR Scalp 15m', default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+
+// Volume Profile + SR Scalp (15m variant)
+var float profile_high = na
+var float profile_low = na
+
+// Setup (longer period for 15m)
+profile_high = ta.highest(high, 30)
+profile_low = ta.lowest(low, 30)
+
+// Entry signals
+long_signal = close > profile_high and volume > ta.sma(volume, 8)
+short_signal = close < profile_low and volume > ta.sma(volume, 8)
+
+// Exit
+take_profit_long = close > profile_high + (profile_high - profile_low) * 0.75
+take_profit_short = close < profile_low - (profile_high - profile_low) * 0.75
+
+// Strategy
+if long_signal
+    strategy.entry('Long', strategy.long)
+if short_signal
+    strategy.entry('Short', strategy.short)
+
+if take_profit_long
+    strategy.close('Long')
+if take_profit_short
+    strategy.close('Short')`
             }
+        };
+
+        const trades = [
+            { entry: '10:30', ePrice: 14250.50, exit: '10:45', xPrice: 14265.75, dir: 'LONG', pnl: 150, status: 'WIN' },
+            { entry: '11:15', ePrice: 14268.00, exit: '11:28', xPrice: 14280.25, dir: 'LONG', pnl: 305, status: 'WIN' }
         ];
 
-        function formatCurrency(value) {
-            return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 0
-            }).format(value);
-        }
+        function displayPineCode(stratKey) {
+            const strat = strategies[stratKey];
+            if (!strat) return;
 
-        function formatTime(datetime) {
-            return datetime.split(' ')[1];
-        }
-
-        function updateDashboard() {
-            // Fetch from trade_log.json (when deployed)
-            // For now, use mock data
-            updateTrades();
-            updateMetrics();
-            updateTimestamp();
-        }
-
-        function updateTrades() {
-            const tbody = document.getElementById('trades-table');
-            
-            if (mockTrades.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No trades yet. Waiting for first signal...</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = mockTrades.reverse().map(trade => `
-                <tr>
-                    <td class="time">${formatTime(trade.entryTime)}</td>
-                    <td>${trade.entryPrice.toFixed(2)}</td>
-                    <td class="time">${formatTime(trade.exitTime)}</td>
-                    <td>${trade.exitPrice.toFixed(2)}</td>
-                    <td><strong>${trade.direction}</strong></td>
-                    <td class="${trade.status === 'WIN' ? 'positive' : 'negative'}">
-                        ${trade.status === 'WIN' ? '+' : '-'}${formatCurrency(Math.abs(trade.pnl))}
-                    </td>
-                    <td><span class="${trade.status === 'WIN' ? 'win' : 'loss'}">✓ ${trade.status}</span></td>
-                </tr>
+            const lines = strat.code.split('\n');
+            const html = lines.map((line, i) => `
+                <div class="pine-line">
+                    <span class="pine-num">${i + 1}</span>
+                    <span>${line}</span>
+                </div>
             `).join('');
+
+            document.getElementById('pine-display').innerHTML = html;
+            document.getElementById('modal-pine').innerHTML = html;
+            document.getElementById('pine-title').textContent = `📝 Pine Script - ${strat.name}`;
+            document.getElementById('modal-title').textContent = `Pine Script - ${strat.name}`;
         }
 
-        function updateMetrics() {
-            const totalPnL = mockTrades.reduce((sum, t) => sum + t.pnl, 0);
-            const winCount = mockTrades.filter(t => t.status === 'WIN').length;
-            const winRate = mockTrades.length > 0 ? ((winCount / mockTrades.length) * 100).toFixed(1) : 0;
-
-            document.getElementById('daily-pnl').textContent = `${totalPnL >= 0 ? '+' : ''}${formatCurrency(totalPnL)}`;
-            document.getElementById('daily-pnl').className = `card-value ${totalPnL >= 0 ? 'positive' : 'negative'}`;
-            
-            document.getElementById('win-rate').textContent = `${winRate}%`;
-            document.getElementById('win-rate-progress').style.width = `${winRate}%`;
-            document.getElementById('trade-count').textContent = mockTrades.length;
-        }
-
-        function updateTimestamp() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit'
+        function copyCode() {
+            const key = document.getElementById('strategy-select').value;
+            navigator.clipboard.writeText(strategies[key].code).then(() => {
+                const btn = document.getElementById('copy-pine');
+                btn.textContent = '✓ Copied!';
+                setTimeout(() => { btn.textContent = '📋 Copy Code'; }, 1500);
             });
-            document.getElementById('last-update').textContent = timeStr;
         }
+
+        document.getElementById('strategy-select').addEventListener('change', e => {
+            displayPineCode(e.target.value);
+        });
+
+        document.getElementById('view-pine').addEventListener('click', () => {
+            document.getElementById('pine-modal').classList.add('active');
+        });
+
+        document.getElementById('copy-pine').addEventListener('click', copyCode);
+        document.getElementById('quick-copy').addEventListener('click', copyCode);
+
+        document.getElementById('pine-modal').addEventListener('click', e => {
+            if (e.target.id === 'pine-modal') e.target.classList.remove('active');
+        });
+
+        // Update trades
+        const tbody = document.getElementById('trades-table');
+        tbody.innerHTML = trades.map(t => `
+            <tr>
+                <td>${t.entry}</td>
+                <td>${t.ePrice}</td>
+                <td>${t.exit}</td>
+                <td>${t.xPrice}</td>
+                <td><strong>${t.dir}</strong></td>
+                <td class="positive">+$${t.pnl}</td>
+                <td><span class="win">✓ ${t.status}</span></td>
+            </tr>
+        `).join('');
 
         // Initialize
-        updateDashboard();
-
-        // Auto-refresh every 30 seconds
-        setInterval(updateDashboard, 30000);
-
-        // Update timestamp every second
-        setInterval(updateTimestamp, 1000);
-
-        // Strategy selector
-        document.getElementById('strategy-select').addEventListener('change', (e) => {
-            console.log('Selected strategy:', e.target.value);
-            // Load data for selected strategy
-        });
+        displayPineCode('scalp-5m');
     </script>
 </body>
 </html>
