@@ -137,36 +137,25 @@
     <script>
         const strategies = {
             'scalp-5m': {
-                name: 'XAUIDR Scalp (5m)',
+                name: 'XAUIDR Scalp (5m) - SIMPLE BREAKOUT',
                 code: `//@version=5
-strategy("XAUIDR Scalp 5m - Volume Profile", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission=0.001)
+strategy("XAUIDR Scalp - Basic Breakout", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
 
 // ===== INPUT PARAMETERS =====
-lookback_high = input.int(20, title="Lookback Period (High)", minval=5, maxval=50)
-lookback_low = input.int(20, title="Lookback Period (Low)", minval=5, maxval=50)
-vol_multiple = input.float(1.5, title="Volume Multiplier", minval=0.5, maxval=5.0)
-tp_percent = input.float(0.5, title="Take Profit %", minval=0.1, maxval=2.0)
-sl_percent = input.float(0.3, title="Stop Loss %", minval=0.1, maxval=2.0)
+lookback = input.int(5, title="Lookback Bars (High/Low)", minval=2, maxval=20)
+tp_pips = input.int(15, title="Take Profit (pips)", minval=5, maxval=50)
+sl_pips = input.int(10, title="Stop Loss (pips)", minval=5, maxval=50)
 
-// ===== STRATEGY SETUP =====
-close_price = close
-high_price = high
-low_price = low
-vol_current = volume
+// ===== CALCULATE HIGH/LOW =====
+highest = ta.highest(high, lookback)
+lowest = ta.lowest(low, lookback)
 
-profile_high = ta.highest(high, lookback_high)
-profile_low = ta.lowest(low, lookback_low)
-vol_avg = ta.sma(volume, 5)
+// ===== ENTRY SIGNALS =====
+// Simple breakout: Close above 5-bar high = LONG
+long_signal = close > highest[1]
 
-// ===== ENTRY CONDITIONS =====
-long_signal = close_price > profile_high and vol_current > (vol_avg * vol_multiple)
-short_signal = close_price < profile_low and vol_current > (vol_avg * vol_multiple)
-
-// ===== EXIT LEVELS =====
-take_profit_long = profile_high + (profile_high - profile_low) * (tp_percent / 100)
-stop_loss_long = profile_high - (profile_high - profile_low) * (sl_percent / 100)
-take_profit_short = profile_low - (profile_low - profile_high) * (tp_percent / 100)
-stop_loss_short = profile_low + (profile_high - profile_low) * (sl_percent / 100)
+// Simple breakout: Close below 5-bar low = SHORT
+short_signal = close < lowest[1]
 
 // ===== ENTRY LOGIC =====
 if long_signal
@@ -175,56 +164,43 @@ if long_signal
 if short_signal
     strategy.entry("Short", strategy.short)
 
-// ===== EXIT LOGIC =====
-if strategy.position_size > 0 and close_price >= take_profit_long
-    strategy.close("Long")
+// ===== EXIT WITH FIXED LEVELS =====
+if strategy.position_size > 0
+    strategy.exit("CloseLong", from_entry="Long", profit=tp_pips, loss=sl_pips)
 
-if strategy.position_size > 0 and close_price <= stop_loss_long
-    strategy.close("Long", comment="SL")
-
-if strategy.position_size < 0 and close_price <= take_profit_short
-    strategy.close("Short")
-
-if strategy.position_size < 0 and close_price >= stop_loss_short
-    strategy.close("Short", comment="SL")
+if strategy.position_size < 0
+    strategy.exit("CloseShort", from_entry="Short", profit=tp_pips, loss=sl_pips)
 
 // ===== VISUALIZATION =====
-plot(profile_high, title="Profile High", color=color.new(color.green, 50), linewidth=2)
-plot(profile_low, title="Profile Low", color=color.new(color.red, 50), linewidth=2)
-plotshape(long_signal, title="Long Signal", style=shape.arrowup, location=location.belowbar, color=color.green, size=size.small)
-plotshape(short_signal, title="Short Signal", style=shape.arrowdown, location=location.abovebar, color=color.red, size=size.small)`
+plot(highest, title="5-Bar High", color=color.new(color.green, 40), linewidth=2)
+plot(lowest, title="5-Bar Low", color=color.new(color.red, 40), linewidth=2)
+
+plotshape(long_signal, title="LONG Signal", style=shape.arrowup, location=location.belowbar, color=color.new(color.green, 0), size=size.large)
+plotshape(short_signal, title="SHORT Signal", style=shape.arrowdown, location=location.abovebar, color=color.new(color.red, 0), size=size.large)
+
+bgcolor(long_signal ? color.new(color.green, 80) : na, title="Long Signal BG")
+bgcolor(short_signal ? color.new(color.red, 80) : na, title="Short Signal BG")`
             },
             'scalp-15m': {
-                name: 'XAUIDR Scalp (15m)',
+                name: 'XAUIDR Scalp (15m) - SIMPLE BREAKOUT',
                 code: `//@version=5
-strategy("XAUIDR Scalp 15m - Volume Profile", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission=0.001)
+strategy("XAUIDR Scalp 15m - Basic Breakout", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
 
 // ===== INPUT PARAMETERS =====
-lookback_high = input.int(30, title="Lookback Period (High)", minval=5, maxval=50)
-lookback_low = input.int(30, title="Lookback Period (Low)", minval=5, maxval=50)
-vol_multiple = input.float(1.8, title="Volume Multiplier", minval=0.5, maxval=5.0)
-tp_percent = input.float(0.75, title="Take Profit %", minval=0.1, maxval=2.0)
-sl_percent = input.float(0.4, title="Stop Loss %", minval=0.1, maxval=2.0)
+lookback = input.int(8, title="Lookback Bars (High/Low)", minval=2, maxval=20)
+tp_pips = input.int(20, title="Take Profit (pips)", minval=5, maxval=50)
+sl_pips = input.int(12, title="Stop Loss (pips)", minval=5, maxval=50)
 
-// ===== STRATEGY SETUP =====
-close_price = close
-high_price = high
-low_price = low
-vol_current = volume
+// ===== CALCULATE HIGH/LOW =====
+highest = ta.highest(high, lookback)
+lowest = ta.lowest(low, lookback)
 
-profile_high = ta.highest(high, lookback_high)
-profile_low = ta.lowest(low, lookback_low)
-vol_avg = ta.sma(volume, 8)
+// ===== ENTRY SIGNALS =====
+// Simple breakout: Close above 8-bar high = LONG
+long_signal = close > highest[1]
 
-// ===== ENTRY CONDITIONS =====
-long_signal = close_price > profile_high and vol_current > (vol_avg * vol_multiple)
-short_signal = close_price < profile_low and vol_current > (vol_avg * vol_multiple)
-
-// ===== EXIT LEVELS =====
-take_profit_long = profile_high + (profile_high - profile_low) * (tp_percent / 100)
-stop_loss_long = profile_high - (profile_high - profile_low) * (sl_percent / 100)
-take_profit_short = profile_low - (profile_low - profile_high) * (tp_percent / 100)
-stop_loss_short = profile_low + (profile_high - profile_low) * (sl_percent / 100)
+// Simple breakout: Close below 8-bar low = SHORT
+short_signal = close < lowest[1]
 
 // ===== ENTRY LOGIC =====
 if long_signal
@@ -233,24 +209,22 @@ if long_signal
 if short_signal
     strategy.entry("Short", strategy.short)
 
-// ===== EXIT LOGIC =====
-if strategy.position_size > 0 and close_price >= take_profit_long
-    strategy.close("Long")
+// ===== EXIT WITH FIXED LEVELS =====
+if strategy.position_size > 0
+    strategy.exit("CloseLong", from_entry="Long", profit=tp_pips, loss=sl_pips)
 
-if strategy.position_size > 0 and close_price <= stop_loss_long
-    strategy.close("Long", comment="SL")
-
-if strategy.position_size < 0 and close_price <= take_profit_short
-    strategy.close("Short")
-
-if strategy.position_size < 0 and close_price >= stop_loss_short
-    strategy.close("Short", comment="SL")
+if strategy.position_size < 0
+    strategy.exit("CloseShort", from_entry="Short", profit=tp_pips, loss=sl_pips)
 
 // ===== VISUALIZATION =====
-plot(profile_high, title="Profile High", color=color.new(color.green, 50), linewidth=2)
-plot(profile_low, title="Profile Low", color=color.new(color.red, 50), linewidth=2)
-plotshape(long_signal, title="Long Signal", style=shape.arrowup, location=location.belowbar, color=color.green, size=size.small)
-plotshape(short_signal, title="Short Signal", style=shape.arrowdown, location=location.abovebar, color=color.red, size=size.small)`
+plot(highest, title="8-Bar High", color=color.new(color.green, 40), linewidth=2)
+plot(lowest, title="8-Bar Low", color=color.new(color.red, 40), linewidth=2)
+
+plotshape(long_signal, title="LONG Signal", style=shape.arrowup, location=location.belowbar, color=color.new(color.green, 0), size=size.large)
+plotshape(short_signal, title="SHORT Signal", style=shape.arrowdown, location=location.abovebar, color=color.new(color.red, 0), size=size.large)
+
+bgcolor(long_signal ? color.new(color.green, 80) : na, title="Long Signal BG")
+bgcolor(short_signal ? color.new(color.red, 80) : na, title="Short Signal BG")`
             }
         };
 
