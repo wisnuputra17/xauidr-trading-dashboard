@@ -139,58 +139,118 @@
             'scalp-5m': {
                 name: 'XAUIDR Scalp (5m)',
                 code: `//@version=5
-strategy('XAUIDR Scalp 5m', default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+strategy("XAUIDR Scalp 5m - Volume Profile", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission=0.001)
 
-// Volume Profile + SR Scalp
-profile_high = ta.highest(high, 20)
-profile_low = ta.lowest(low, 20)
+// ===== INPUT PARAMETERS =====
+lookback_high = input.int(20, title="Lookback Period (High)", minval=5, maxval=50)
+lookback_low = input.int(20, title="Lookback Period (Low)", minval=5, maxval=50)
+vol_multiple = input.float(1.5, title="Volume Multiplier", minval=0.5, maxval=5.0)
+tp_percent = input.float(0.5, title="Take Profit %", minval=0.1, maxval=2.0)
+sl_percent = input.float(0.3, title="Stop Loss %", minval=0.1, maxval=2.0)
 
-// Entry signals
-long_signal = close > profile_high and volume > ta.sma(volume, 5)
-short_signal = close < profile_low and volume > ta.sma(volume, 5)
+// ===== STRATEGY SETUP =====
+close_price = close
+high_price = high
+low_price = low
+vol_current = volume
 
-// Exit
-take_profit_long = close > profile_high + (profile_high - profile_low) * 0.5
-take_profit_short = close < profile_low - (profile_high - profile_low) * 0.5
+profile_high = ta.highest(high, lookback_high)
+profile_low = ta.lowest(low, lookback_low)
+vol_avg = ta.sma(volume, 5)
 
-// Strategy
+// ===== ENTRY CONDITIONS =====
+long_signal = close_price > profile_high and vol_current > (vol_avg * vol_multiple)
+short_signal = close_price < profile_low and vol_current > (vol_avg * vol_multiple)
+
+// ===== EXIT LEVELS =====
+take_profit_long = profile_high + (profile_high - profile_low) * (tp_percent / 100)
+stop_loss_long = profile_high - (profile_high - profile_low) * (sl_percent / 100)
+take_profit_short = profile_low - (profile_low - profile_high) * (tp_percent / 100)
+stop_loss_short = profile_low + (profile_high - profile_low) * (sl_percent / 100)
+
+// ===== ENTRY LOGIC =====
 if long_signal
-    strategy.entry('Long', strategy.long)
-if short_signal
-    strategy.entry('Short', strategy.short)
+    strategy.entry("Long", strategy.long)
 
-if take_profit_long
-    strategy.close('Long')
-if take_profit_short
-    strategy.close('Short')`
+if short_signal
+    strategy.entry("Short", strategy.short)
+
+// ===== EXIT LOGIC =====
+if strategy.position_size > 0 and close_price >= take_profit_long
+    strategy.close("Long")
+
+if strategy.position_size > 0 and close_price <= stop_loss_long
+    strategy.close("Long", comment="SL")
+
+if strategy.position_size < 0 and close_price <= take_profit_short
+    strategy.close("Short")
+
+if strategy.position_size < 0 and close_price >= stop_loss_short
+    strategy.close("Short", comment="SL")
+
+// ===== VISUALIZATION =====
+plot(profile_high, title="Profile High", color=color.new(color.green, 50), linewidth=2)
+plot(profile_low, title="Profile Low", color=color.new(color.red, 50), linewidth=2)
+plotshape(long_signal, title="Long Signal", style=shape.arrowup, location=location.belowbar, color=color.green, size=size.small)
+plotshape(short_signal, title="Short Signal", style=shape.arrowdown, location=location.abovebar, color=color.red, size=size.small)`
             },
             'scalp-15m': {
                 name: 'XAUIDR Scalp (15m)',
                 code: `//@version=5
-strategy('XAUIDR Scalp 15m', default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+strategy("XAUIDR Scalp 15m - Volume Profile", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission=0.001)
 
-// Volume Profile + SR Scalp (15m variant)
-profile_high = ta.highest(high, 30)
-profile_low = ta.lowest(low, 30)
+// ===== INPUT PARAMETERS =====
+lookback_high = input.int(30, title="Lookback Period (High)", minval=5, maxval=50)
+lookback_low = input.int(30, title="Lookback Period (Low)", minval=5, maxval=50)
+vol_multiple = input.float(1.8, title="Volume Multiplier", minval=0.5, maxval=5.0)
+tp_percent = input.float(0.75, title="Take Profit %", minval=0.1, maxval=2.0)
+sl_percent = input.float(0.4, title="Stop Loss %", minval=0.1, maxval=2.0)
 
-// Entry signals
-long_signal = close > profile_high and volume > ta.sma(volume, 8)
-short_signal = close < profile_low and volume > ta.sma(volume, 8)
+// ===== STRATEGY SETUP =====
+close_price = close
+high_price = high
+low_price = low
+vol_current = volume
 
-// Exit
-take_profit_long = close > profile_high + (profile_high - profile_low) * 0.75
-take_profit_short = close < profile_low - (profile_high - profile_low) * 0.75
+profile_high = ta.highest(high, lookback_high)
+profile_low = ta.lowest(low, lookback_low)
+vol_avg = ta.sma(volume, 8)
 
-// Strategy
+// ===== ENTRY CONDITIONS =====
+long_signal = close_price > profile_high and vol_current > (vol_avg * vol_multiple)
+short_signal = close_price < profile_low and vol_current > (vol_avg * vol_multiple)
+
+// ===== EXIT LEVELS =====
+take_profit_long = profile_high + (profile_high - profile_low) * (tp_percent / 100)
+stop_loss_long = profile_high - (profile_high - profile_low) * (sl_percent / 100)
+take_profit_short = profile_low - (profile_low - profile_high) * (tp_percent / 100)
+stop_loss_short = profile_low + (profile_high - profile_low) * (sl_percent / 100)
+
+// ===== ENTRY LOGIC =====
 if long_signal
-    strategy.entry('Long', strategy.long)
-if short_signal
-    strategy.entry('Short', strategy.short)
+    strategy.entry("Long", strategy.long)
 
-if take_profit_long
-    strategy.close('Long')
-if take_profit_short
-    strategy.close('Short')`
+if short_signal
+    strategy.entry("Short", strategy.short)
+
+// ===== EXIT LOGIC =====
+if strategy.position_size > 0 and close_price >= take_profit_long
+    strategy.close("Long")
+
+if strategy.position_size > 0 and close_price <= stop_loss_long
+    strategy.close("Long", comment="SL")
+
+if strategy.position_size < 0 and close_price <= take_profit_short
+    strategy.close("Short")
+
+if strategy.position_size < 0 and close_price >= stop_loss_short
+    strategy.close("Short", comment="SL")
+
+// ===== VISUALIZATION =====
+plot(profile_high, title="Profile High", color=color.new(color.green, 50), linewidth=2)
+plot(profile_low, title="Profile Low", color=color.new(color.red, 50), linewidth=2)
+plotshape(long_signal, title="Long Signal", style=shape.arrowup, location=location.belowbar, color=color.green, size=size.small)
+plotshape(short_signal, title="Short Signal", style=shape.arrowdown, location=location.abovebar, color=color.red, size=size.small)`
             }
         };
 
